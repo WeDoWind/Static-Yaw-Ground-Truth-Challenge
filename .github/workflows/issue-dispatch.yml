@@ -1,0 +1,20 @@
+name: Dispatch submission to private evaluator
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  dispatch:
+    if: |
+      contains(github.event.issue.labels.*.name, 'submission') &&
+      startsWith(github.event.issue.title, 'Submission:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract submission data
+        id: extract
+        run: echo "Issue created"
