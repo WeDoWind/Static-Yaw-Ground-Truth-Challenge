@@ -28,9 +28,12 @@ jobs:
           ls -lh payload.json
       - name: Send to Eval Repo
         env:
-          EVAL_REPO: ${{ secrets.EVAL_REPO }}
-          EVAL_TEST: 'Test bla'
-
+          TOKEN: ${{ secrets.EVAL_TOKEN }}
         run: |
-          echo $EVAL_REPO
-          echo $EVAL_TEST
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/WeDoWind/Static-Yaw-Ground-Truth-Challenge-Evaluation/dispatches \
+            -d '{"event_type":"test_result","client_payload":{"unit":false,"integration":true}}'
