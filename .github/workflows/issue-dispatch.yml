@@ -29,4 +29,4 @@ jobs:
       - name: Send to Eval Repo
         env:
           EVAL_REPO: ${{ vars.EVAL_REPO }}  
-        run: echo EVAL_REPO
+        run: echo $EVAL_REPO
