@@ -1,0 +1,44 @@
+name: "Submit results"
+description: "Upload your submission.csv to get scored"
+title: "Submission: <team> - <version>"
+labels: ["submission"]
+assignees: []
+body:
+  - type: input
+    id: team
+    attributes:
+      label: Team name
+      placeholder: e.g., WindWizards
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Submission version / tag
+      placeholder: e.g., v1, 2025-09-11-1
+    validations:
+      required: true
+
+  - type: textarea
+    id: file
+    attributes:
+      label: Attach your `submission.csv`
+      description: >
+        Drag & drop your CSV here (or click to select). It must be a single vector
+        of floats (comma-separated or newline-separated), exact length N, no header,
+        no NaN/Inf. GitHub will insert a link like `[submission.csv](https://...)`.
+      placeholder: "Drop the file here; a link to the attachment will appear."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmations
+      options:
+        - label: "I attached a file named `submission.csv`."
+          required: true
+        - label: "The file has exactly N predictions, no header, and no NaN/Inf."
+          required: true
+
