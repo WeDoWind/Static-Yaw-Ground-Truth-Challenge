@@ -28,5 +28,9 @@ jobs:
           ls -lh payload.json
       - name: Send to Eval Repo
         env:
-          EVAL_REPO: ${{ vars.EVAL_REPO }}  
-        run: echo $EVAL_REPO
+          EVAL_REPO: ${{ secrets.EVAL_REPO }}
+          EVAL_TEST: 'Test bla'
+
+        run: |
+          echo $EVAL_REPO
+          echo $EVAL_TEST
