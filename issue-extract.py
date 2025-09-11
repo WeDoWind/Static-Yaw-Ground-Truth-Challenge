@@ -10,6 +10,7 @@ team, version = (
     (m.group(1).strip(), m.group(2).strip()) if m else ("UNKNOWN", "UNKNOWN")
 )
 
+print(team, version)
 # Grab the first attachment/CSV-like link from the issue body
 urls = re.findall(r"\((https?://[^\s)]+)\)", body)
 # Keep GitHub asset links or anything ending with .csv
