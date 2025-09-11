@@ -24,5 +24,5 @@ payload = {
     "issue_html_url": evt["issue"]["html_url"],
     "sender": evt["sender"]["login"],
 }
-print("::set-output name=payload::" + json.dumps(payload))
+# print("::set-output name=payload::" + json.dumps(payload))
 print(json.dumps(payload, indent=2))
