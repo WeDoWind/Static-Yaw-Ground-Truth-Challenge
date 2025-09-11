@@ -10,9 +10,19 @@ team, version = (
     (m.group(1).strip(), m.group(2).strip()) if m else ("UNKNOWN", "UNKNOWN")
 )
 
-print(team, version)
 # Grab the first attachment/CSV-like link from the issue body
 urls = re.findall(r"\((https?://[^\s)]+)\)", body)
 # Keep GitHub asset links or anything ending with .csv
 urls = [u for u in urls if ("/assets/" in u) or u.lower().endswith(".csv")]
-print(urls)
+
+payload = {
+    "issue_number": evt["issue"]["number"],
+    "issue_repo": evt["repository"]["full_name"],
+    "team": team,
+    "version": version,
+    "attachment_urls": urls[:1],  # first file only; keep it simple
+    "issue_html_url": evt["issue"]["html_url"],
+    "sender": evt["sender"]["login"],
+}
+print("::set-output name=payload::" + json.dumps(payload))
+print(json.dumps(payload, indent=2))
