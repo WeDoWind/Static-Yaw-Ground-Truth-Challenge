@@ -22,3 +22,7 @@ jobs:
       - name: Extract submission data
         id: extract
         run: python issue-extract.py
+      - name: Show json file
+        run: | 
+          cat payload.json
+          ls -lh payload.json
