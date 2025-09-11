@@ -3,7 +3,7 @@ import json, os, re
 evt = json.load(open(os.environ["GITHUB_EVENT_PATH"]))
 title = evt["issue"]["title"]
 body = evt["issue"]["body"] or ""
-
+print(body)
 # Parse title: "Submission: <team> - <version>"
 m = re.match(r"^Submission:\s*(.+?)\s*-\s*(.+)\s*$", title)
 team, version = (
