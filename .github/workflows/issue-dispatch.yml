@@ -29,8 +29,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.EVAL_TOKEN }}
         run: |
-          jq -c --arg et score_issue_submission '{event_type:$et, client_payload:.}' payload.json > body.json
-          cat body.json
+          jq -c --arg et test_result '{event_type:$et, client_payload:.}' payload.json > body.json
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
