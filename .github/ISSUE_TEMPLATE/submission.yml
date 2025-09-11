@@ -1,6 +1,6 @@
 name: "Submit results"
 description: "Upload your submission.csv to get scored"
-title: "Submission: <team> - <version>"
+title: "Submission: <title>"
 labels: ["submission"]
 assignees: []
 body:
