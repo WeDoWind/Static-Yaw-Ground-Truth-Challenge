@@ -20,7 +20,7 @@ payload = {
     "issue_repo": evt["repository"]["full_name"],
     "team": team,
     "version": version,
-    "attachment_urls": urls[:1],  # first file only; keep it simple
+    "attachment_urls": urls[0],  # first file only; keep it simple
     "issue_html_url": evt["issue"]["html_url"],
     "sender": evt["sender"]["login"],
 }
