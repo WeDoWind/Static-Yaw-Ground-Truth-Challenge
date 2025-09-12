@@ -5,12 +5,20 @@ labels: ["submission"]
 assignees: []
 body:
   - type: input
+    id: participant_id
+    attributes:
+      label: PARTICIPANT_ID
+      placeholder: Will be provided upon challenge registration
+    validations:
+      required: true
+
+  - type: input
     id: team
     attributes:
       label: Team name
-      placeholder: e.g., WindWizards
+      placeholder: e.g., WeDoWinders
     validations:
-      required: true
+      required: false
 
   - type: input
     id: version
