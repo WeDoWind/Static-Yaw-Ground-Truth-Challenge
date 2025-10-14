@@ -9,6 +9,6 @@ The leaderboard only shows the best scores per team in case of multiple submissi
 
 <!-- leaderboard:start -->
 | Rank | Team | RMSE | MAE | Version |
-|---:|:-----|----:|----:|:--:|:--|
+|---:|:-----|----:|----:|:--:|
 | 1 | WeDoWinders | 2.0 | 4.0 | v1 |
 <!-- leaderboard:end -->
