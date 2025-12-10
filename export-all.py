@@ -12,7 +12,7 @@ import numpy as np
 
 # ==================== KONFIGURATION ====================
 class Config:
-    RCLONE = Path(r"C:\Users\kevin.haizmann\Downloads\rclone-v1.71.2-windows-amd64\rclone-v1.71.2-windows-amd64\rclone.exe")
+    RCLONE = "rclone"
     GIT = Path(r"C:\Program Files\Git\bin\git.exe")
     REMOTE = "switch:"
     LOCAL_ROOT = Path(r"C:\Users\kevin.haizmann\OneDrive - OST\Dokumente\Switch\Exports")
@@ -309,4 +309,4 @@ def main():
             time.sleep(300)
 
 if __name__ == "__main__":
-    main()
+    get_remote_directories()
