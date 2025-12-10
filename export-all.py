@@ -13,11 +13,12 @@ import numpy as np
 # ==================== KONFIGURATION ====================
 class Config:
     RCLONE = "rclone"
-    GIT = Path(r"C:\Program Files\Git\bin\git.exe")
-    REMOTE = "switch:"
-    LOCAL_ROOT = Path(r"C:\Users\kevin.haizmann\OneDrive - OST\Dokumente\Switch\Exports")
+    GIT = "git"
+    REMOTE = "switchdrive:"
+    LOCAL_ROOT = Path("Exports")
+    DEPLOY_DIR = Path("docs")
     SOLUTION_DIR = LOCAL_ROOT / "solution"
-    GITHUB_REPO = Path(r"C:\Users\kevin.haizmann\OneDrive - OST\Dokumente\leaderboard")
+    GITHUB_REPO = Path().cwd()
     ENABLE_GIT_PUSH = True
     UPDATE_INTERVAL_HOURS = 1
     PARTICIPANT_PATTERN = re.compile(r"PARTICIPANT_\d{1,3}")
@@ -48,7 +49,8 @@ def get_remote_directories() -> List[str]:
         if rc != 0:
             log(f"Failed to fetch directories: {err}", "ERROR")
             return []
-        return [item["Path"].replace("\\", "/") for item in json.loads(out) if "Path" in item]
+        remote_dirs = [item["Path"].replace("\\", "/") for item in json.loads(out) if "Path" in item]
+        return remote_dirs
     except Exception as e:
         log(f"Error parsing rclone output: {e}", "ERROR")
         return []
@@ -62,6 +64,7 @@ def find_participant_directories(all_dirs: List[str]) -> List[str]:
             if Config.PARTICIPANT_PATTERN.fullmatch(segment):
                 participants.add("/".join(parts[:i + 1]))
                 break
+
     return sorted(participants)
 
 def sync_submissions(participant_path: str) -> bool:
@@ -105,17 +108,17 @@ def load_csv_data(filepath: Path) -> Optional[np.ndarray]:
         log(f"Cannot read {filepath.name}: {e}", "WARNING")
         return None
 
-def load_solutions() -> Dict[str, np.ndarray]:
+def load_solutions(participants: list[str]) -> Dict[str, np.ndarray]:
     """Load all solution files."""
     solutions = {}
-    if not Config.SOLUTION_DIR.exists():
-        log(f"Solution directory missing: {Config.SOLUTION_DIR}", "ERROR")
-        return solutions
-    
-    for file in Config.SOLUTION_DIR.glob("*.csv"):
-        data = load_csv_data(file)
-        if data is not None:
-            solutions[file.name] = data
+
+    for participant in participants:
+        local_path = Config.LOCAL_ROOT / participant.replace("/", os.sep) / "Submissions"
+
+        for file in local_path.glob("*.csv"):
+            data = load_csv_data(file)
+            if data is not None:
+                solutions[file.name] = data
     
     log(f"Loaded {len(solutions)} solution file(s)", "DATA")
     return solutions
@@ -145,6 +148,8 @@ def evaluate_all_submissions(solutions: Dict[str, np.ndarray]) -> List[Dict]:
         for submission_file in submissions_dir.glob("Results_*.csv"):
             match = Config.SUBMISSION_PATTERN.match(submission_file.name)
             if not match:
+                print(submission_file)
+                print(participant_dir)
                 continue
             
             participant_id, submission_num = match.groups()
@@ -206,20 +211,8 @@ def push_to_github():
         log("Git push disabled", "INFO")
         return False
     
-    if not Config.GITHUB_REPO.exists():
-        log(f"GitHub repo path missing: {Config.GITHUB_REPO}", "ERROR")
-        return False
-    
     try:
-        # Copy CSV to repo
-        csv_source = Config.LOCAL_ROOT / "rmse_ranking.csv"
-        csv_dest = Config.GITHUB_REPO / "rmse_ranking.csv"
-        shutil.copy2(csv_source, csv_dest)
-        log("CSV copied to GitHub repo", "PROCESS")
-        
-        # Git operations
-        os.chdir(Config.GITHUB_REPO)
-        run_command([str(Config.GIT), "add", "rmse_ranking.csv"], check=True)
+        run_command([str(Config.GIT), "add", str(Config.DEPLOY_DIR / "rmse_ranking.csv")], check=True)
         
         commit_msg = f"Update rankings - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         rc, out, _ = run_command([str(Config.GIT), "commit", "-m", commit_msg])
@@ -261,8 +254,7 @@ def run_update_cycle() -> bool:
         if f"{participant}/Submissions" in dirs_set:
             sync_submissions(participant)
     
-    # 3. Load solutions
-    solutions = load_solutions()
+    solutions = load_solutions(participants)
     if not solutions:
         log("No solution files found", "ERROR")
         return False
@@ -274,7 +266,7 @@ def run_update_cycle() -> bool:
         return False
     
     # 5. Save ranking
-    output_path = Config.LOCAL_ROOT / "rmse_ranking.csv"
+    output_path = Config.DEPLOY_DIR / "rmse_ranking.csv"
     save_ranking_csv(results, output_path)
     
     # 6. Push to GitHub
@@ -309,4 +301,4 @@ def main():
             time.sleep(300)
 
 if __name__ == "__main__":
-    get_remote_directories()
+    run_update_cycle()
