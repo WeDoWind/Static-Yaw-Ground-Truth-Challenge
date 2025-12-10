@@ -111,14 +111,14 @@ def load_csv_data(filepath: Path) -> Optional[np.ndarray]:
 def load_solutions(participants: list[str]) -> Dict[str, np.ndarray]:
     """Load all solution files."""
     solutions = {}
-
-    for participant in participants:
-        local_path = Config.LOCAL_ROOT / participant.replace("/", os.sep) / "Submissions"
-
-        for file in local_path.glob("*.csv"):
-            data = load_csv_data(file)
-            if data is not None:
-                solutions[file.name] = data
+    if not Config.SOLUTION_DIR.exists():
+        log(f"Solution directory missing: {Config.SOLUTION_DIR}", "ERROR")
+        return solutions
+    
+    for file in Config.SOLUTION_DIR.glob("*.csv"):
+        data = load_csv_data(file)
+        if data is not None:
+            solutions[file.name] = data
     
     log(f"Loaded {len(solutions)} solution file(s)", "DATA")
     return solutions
@@ -148,8 +148,6 @@ def evaluate_all_submissions(solutions: Dict[str, np.ndarray]) -> List[Dict]:
         for submission_file in submissions_dir.glob("Results_*.csv"):
             match = Config.SUBMISSION_PATTERN.match(submission_file.name)
             if not match:
-                print(submission_file)
-                print(participant_dir)
                 continue
             
             participant_id, submission_num = match.groups()
