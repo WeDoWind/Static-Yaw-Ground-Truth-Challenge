@@ -1,3 +1,2 @@
 Rank,Submission_ID,Participant_ID,Submission_Num,RMSE,Filename,Pfad
-1,PARTICIPANT_999_Sub1,999,1,0.000000,Results_999_1.csv,Exports/static_yaw_misalignment/PARTICIPANT_999
-2,PARTICIPANT_999_Sub2,999,2,25.094820,Results_999_2.csv,Exports/static_yaw_misalignment/PARTICIPANT_999
+1,PARTICIPANT_999_Sub1,999,1,8.910374,Results_999_1.csv,Exports/static_yaw_misalignment/PARTICIPANT_999
