@@ -1,0 +1,70 @@
+name: Validate submission
+
+# Runs on every PR that touches Submissions/. Has NO secrets and never scores
+# (the ground truth is private). It only checks that the file is well-formed and
+# that the PR is scoped to adding a single new submission. The green/red result
+# is what branch protection uses to gate the merge.
+
+on:
+  pull_request:
+    paths:
+      - 'Submissions/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pandas numpy
+
+      - name: Determine changed files
+        id: changes
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-status "$BASE" "$HEAD" > changes.txt
+          echo "Changed files:"; cat changes.txt
+
+          # A submission PR may only ADD files under Submissions/.
+          if awk '{print $2}' changes.txt | grep -vqE '^Submissions/'; then
+            echo "::error::A submission PR may only add files under Submissions/. Other changes were detected:"
+            awk '{print $2}' changes.txt | grep -vE '^Submissions/' || true
+            exit 1
+          fi
+          if awk '$1!="A" {print}' changes.txt | grep -q .; then
+            echo "::error::Existing submissions cannot be modified, renamed or deleted — add a new Results_NN_x.csv instead."
+            exit 1
+          fi
+
+          added=$(awk '$1=="A" {print $2}' changes.txt | grep -E '^Submissions/Results_[0-9]+_([0-9]+|final)\.csv$' || true)
+          if [ -z "$added" ]; then
+            echo "::error::No new file matching Submissions/Results_NN_x.csv (or Results_NN_final.csv) was found in this PR."
+            exit 1
+          fi
+          {
+            echo "added<<EOF"
+            echo "$added"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Validate each submission
+        run: |
+          set -e
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            echo "::group::Validating $f"
+            python validate_submission.py "$f"
+            echo "::endgroup::"
+          done <<< "${{ steps.changes.outputs.added }}"

@@ -2,5 +2,13 @@
 
 This is the official leaderboard repository for the [WeDoWind Static Yaw Ground Truth Challenge](https://community.wedowind.ch/posts/open-data-exploration-challenge-4-static-yaw-ground-truth-challenge).
 
-Based on your submissions we will calculate the root mean squared error (RMSE) and the mean absolute error (MAE), which will be listed in the [leaderboard](leaderboard.html).
-The leaderboard only shows the best scores per team in case of multiple submissions.
+Based on your submissions we calculate the root mean squared error (RMSE) and the mean absolute error (MAE), which are listed in the [leaderboard](https://wedowind.github.io/Static-Yaw-Ground-Truth-Challenge/).
+The leaderboard only shows the best score per participant in case of multiple submissions.
+
+## Submitting
+
+Submissions are made by pull request — see **[docs/SUBMITTING.md](docs/SUBMITTING.md)**.
+In short: add your `Submissions/Results_NN_x.csv` on a branch, open a PR, and once
+the automated format check passes and a maintainer merges it, your scores appear
+on the leaderboard automatically. The ground truth is held privately; scoring runs
+in a separate evaluation repository.

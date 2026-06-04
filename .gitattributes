@@ -1,0 +1,2 @@
+# Submission CSVs are large (~25 MB each); store them via Git LFS to keep history lean.
+Submissions/*.csv filter=lfs diff=lfs merge=lfs -text

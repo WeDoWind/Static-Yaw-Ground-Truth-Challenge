@@ -1,0 +1,55 @@
+name: Score merged submission
+
+# After a submission is merged to main, hand it to the PRIVATE evaluation repo,
+# which holds the ground truth, scores it (RMSE + MAE), and pushes the updated
+# docs/rmse_ranking.csv back here. Secrets are only used here, post-merge, so
+# untrusted PR code never runs with access to them.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Submissions/**'
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Find newly added submissions
+        id: find
+        run: |
+          if git rev-parse --verify -q "${{ github.event.before }}^{commit}" >/dev/null; then
+            git diff --name-status "${{ github.event.before }}" "${{ github.sha }}" > changes.txt
+          else
+            git show --name-status --format= "${{ github.sha }}" > changes.txt
+          fi
+          echo "Changed files:"; cat changes.txt
+          added=$(awk '$1=="A" {print $2}' changes.txt | grep -E '^Submissions/Results_[0-9]+_([0-9]+|final)\.csv$' || true)
+          {
+            echo "added<<EOF"
+            echo "$added"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch to evaluation repo
+        if: steps.find.outputs.added != ''
+        env:
+          TOKEN: ${{ secrets.EVAL_TOKEN }}
+        run: |
+          files_json=$(printf '%s\n' "${{ steps.find.outputs.added }}" | grep -v '^$' | jq -R . | jq -cs .)
+          payload=$(jq -cn --argjson files "$files_json" --arg sha "${{ github.sha }}" \
+            '{event_type:"score_submission", client_payload:{files:$files, sha:$sha}}')
+          echo "Dispatching: $payload"
+          curl -fsSL -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/WeDoWind/Static-Yaw-Ground-Truth-Challenge-Evaluation/dispatches \
+            -d "$payload"
