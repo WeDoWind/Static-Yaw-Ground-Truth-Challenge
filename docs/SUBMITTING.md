@@ -6,7 +6,7 @@ against the held-out ground truth and appear on the
 [leaderboard](https://wedowind.github.io/Static-Yaw-Ground-Truth-Challenge/).
 
 The challenge deadline is **May 31st, 2026**. You may submit multiple variations
-before then; only your best score per participant is shown.
+before then; the leaderboard shows every submission, not just your best one.
 
 ## File format
 
@@ -25,20 +25,30 @@ cover the private rows instead: exactly **3,627,380** rows,
 `priv_00000000` … `priv_03627379`, same `row_id,yaw_offset` header. Details on
 when/how to submit the final file will be announced before the deadline.
 
+## Code
+
+Please also submit the code you used to produce your predictions, in the same
+pull request, under `Submissions/Code/PARTICIPANT_NN/`. Include whatever a
+reader would need to understand your approach (scripts/notebooks, and a short
+note on how to run them); no need to include large data files. We archive the
+challenge results — including this code — on Zenodo after the challenge ends.
+
 ## Steps
 
 1. Create a branch named `sub/Submission_NN_x` (matching your file).
-2. Add your file as `Submissions/Results_NN_x.csv`.
+2. Add your file as `Submissions/Results_NN_x.csv`, and your code under
+   `Submissions/Code/PARTICIPANT_NN/`.
    > Submission CSVs are tracked with **Git LFS**. Run `git lfs install` once,
    > then `git add Submissions/Results_NN_x.csv` as usual — LFS handles the rest.
 3. Commit and push the branch, then open a **pull request** against `main`.
 4. The **Validate submission** check runs automatically and reports any format
-   problems. Fix them and push again until it's green.
+   problems with your results file. Fix them and push again until it's green.
 5. A maintainer merges your PR. Scoring runs and the leaderboard updates within
    a few minutes.
 
 ## Notes
 
-- A submission PR must **only add a single new** `Submissions/Results_NN_x.csv`.
+- A submission PR must **only add** files under `Submissions/` — your
+  `Results_NN_x.csv` plus, optionally, files under `Submissions/Code/PARTICIPANT_NN/`.
   Editing other files (or changing an existing submission) will fail validation.
 - Submissions are immutable once merged. To revise, submit a new `x`.

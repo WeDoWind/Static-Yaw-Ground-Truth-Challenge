@@ -8,3 +8,9 @@ Put your results file here via a pull request. See
 - Header `row_id,yaw_offset`, exactly 1,064,641 rows, no NaN/empty values.
 - Files are tracked with **Git LFS** (see [../.gitattributes](../.gitattributes)).
 - Submissions are immutable once merged — submit a new `x` to revise.
+
+## Code
+
+Also submit the code you used to produce your predictions, in the same pull
+request, under `Code/PARTICIPANT_NN/`. We archive it alongside the results on
+Zenodo after the challenge ends.
