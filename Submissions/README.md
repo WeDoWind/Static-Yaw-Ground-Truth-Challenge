@@ -11,6 +11,6 @@ Put your results file here via a pull request. See
 
 ## Code
 
-Also submit the code you used to produce your predictions, in the same pull
+Also submit the code you used to produce your predictions separately or in the same pull
 request, under `Code/PARTICIPANT_NN/`. We archive it alongside the results on
 Zenodo after the challenge ends.
